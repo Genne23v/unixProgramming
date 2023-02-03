@@ -42,8 +42,7 @@ int main()
 	    return -1;
     }
     ifr.ifr_addr.sa_family = AF_INET;
-    strncpy(ifr.ifr_name, "eth0", IFNAMSIZ-1);
-
+    
     system("clear");
     do {
         cout << "Choose from the following:" << endl;
