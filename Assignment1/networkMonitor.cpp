@@ -111,21 +111,20 @@ int main() {
         cout << "Connection accepted via socket: " << new_sock[i] << endl;
     }
 
+    const char monitor[] = "Monitor";
     while(isRunning){        
-        // FD_ZERO(&readfds);
-        // FD_SET(serv_sock, &readfds);        
         int ready = select(max_sd+1, &readfds, NULL, NULL, NULL);
-        // cout << "Loop start" <<endl;
         if (ready < 0){
             cerr << "select error" << endl;
         }
         if (ready > 0 ){
-            const char monitor[] = "Monitor";
             for(int i=0; i<numInterface; i++){
                 memset(msg[i], 0, MAXBUF);
                 if(FD_ISSET(new_sock[i], &readfds)){
                     numBytes = read(new_sock[i], msg[i], sizeof(msg[i]));
                     if (numBytes > 0){
+                        cout << "<Socket " << new_sock[i] << ">" << endl;
+                        cout << msg[i] << endl;
                         if (endsWithReady(msg[i])){
                             send(new_sock[i], monitor, sizeof(monitor), 0);
                         } else if (strcmp(msg[i], "Link Down") == 0){
@@ -136,13 +135,11 @@ int main() {
                         } else {
                             send(new_sock[i], monitor, sizeof(monitor), 0);
                         }
-                        cout << "<Socket " << new_sock[i] << ">" << endl;
-                        cout << msg[i] << endl;
                     } else if (numBytes == 0){
-                        // FD_CLR(new_sock[i], &readfds);
+                        FD_CLR(new_sock[i], &readfds);
                     } else {
                         cerr << "read error" << endl;
-                        // isRunning = false;
+                        isRunning = false;
                     }
                 }
             }
@@ -153,9 +150,6 @@ int main() {
         sleep(1); 
     }
     
-//You might prefer that the network monitor send a SIGINT to each interface monitor instead. 
-//Or you might want to set the socket read on the interface monitor 
-//as non-blocking or blocking with a timeout using setsockopt.
     cout << "Socket is being closed" << endl;
     close(sockfd);
 
