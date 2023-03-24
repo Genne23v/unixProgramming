@@ -78,7 +78,7 @@ void *recv_func(void *arg)
     {
         Message msg;
         msgrcv(msgid, &msg, sizeof(msg), 4, 0);
-cout<<"msg received from client "<<msg.msgBuf.source<<": "<<msg.msgBuf.buf<<endl;
+        cout<<"msg received from client "<<msg.msgBuf.source<<": "<<msg.msgBuf.buf<<endl;
         if(strncmp(msg.msgBuf.buf, "Quit", 4)==0) 
         {
             is_running=false;
